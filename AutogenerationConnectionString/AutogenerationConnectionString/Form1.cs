@@ -393,5 +393,48 @@ namespace AutogenerationConnectionString
             txt_port.Text = "";
             comboBox1.Text = "";
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txt_connInfo_TextChanged(object sender, EventArgs e)
+        {
+            SelectEnum select = (SelectEnum)cmbox_databaseType.SelectedIndex;
+            string connection = txt_connInfo.Text.Trim();
+            //DataSource ds = GetDataSource(select, e);
+            switch (select)
+            {
+                case SelectEnum.Oracle:
+                    using (OracleConnection con = new OracleConnection(connection))
+                    {
+                        try
+                        {
+                            con.Open();
+                            OracleCommand cmd = con.CreateCommand();
+                            cmd.CommandText = "select 1 from dual";
+                            OracleDataAdapter da = new OracleDataAdapter(cmd);
+                            DataTable dt = new DataTable();
+                            //da.Fill(dt);
+                            //if (dt != null)
+                            //{
+                            //    MessageBox.Show(this, "连接成功", "提示");
+                            //}
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(this, "数据库连接失败", "提示");
+                        }
+                    }
+                    break;
+                case SelectEnum.Server_SQL:
+                    break;
+                case SelectEnum.MySQL:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
