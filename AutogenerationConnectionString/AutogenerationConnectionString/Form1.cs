@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace AutogenerationConnectionString
         {
             InitializeComponent();
         }
+        private static List<UserInfo> UserInfoList = new List<UserInfo>();
         /// <summary>
         /// 生成连接信息
         /// </summary>
@@ -396,7 +398,22 @@ namespace AutogenerationConnectionString
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            var userName = comboBox2.Text.Trim();
+            if (string.IsNullOrEmpty(userName))
+            {
+                MessageBox.Show("请先选择要生成token的用户名");
+                return;
+            }
+            var entity = UserInfoList.FirstOrDefault(x=>x.UserName==userName);
+            if (entity!=null)
+            {
+                string token = JsonConvert.SerializeObject(new UserToken(entity.UserGuid));
+                textBox1.Text= DESEncrypt.Encrypt(token);
+            }
+            else
+            {
+                MessageBox.Show("生成失败");
+            }
         }
 
         private void txt_connInfo_TextChanged(object sender, EventArgs e)
@@ -413,14 +430,17 @@ namespace AutogenerationConnectionString
                         {
                             con.Open();
                             OracleCommand cmd = con.CreateCommand();
-                            cmd.CommandText = "select 1 from dual";
+                            cmd.CommandText = "select UserGuid,UserCode as UserName from SYS_USER";
                             OracleDataAdapter da = new OracleDataAdapter(cmd);
                             DataTable dt = new DataTable();
-                            //da.Fill(dt);
-                            //if (dt != null)
-                            //{
-                            //    MessageBox.Show(this, "连接成功", "提示");
-                            //}
+                            da.Fill(dt);
+                            if (dt != null)
+                            {
+                                UserInfoList= dt.ToList<UserInfo>();
+                                comboBox2.DataSource = dt;
+                                comboBox2.DisplayMember = "UserName";
+                                comboBox2.SelectedIndex = 0;
+                            }
                         }
                         catch (Exception ex)
                         {
