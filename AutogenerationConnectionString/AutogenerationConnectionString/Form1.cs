@@ -21,6 +21,7 @@ namespace AutogenerationConnectionString
     {
         public Form1()
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
         }
         private static List<UserInfo> UserInfoList = new List<UserInfo>();
@@ -425,6 +426,7 @@ namespace AutogenerationConnectionString
                     MessageBox.Show("请先输入连接信息","提示");
                     return;
                 }
+                this.Height = 530;
                 SelectEnum select = (SelectEnum)cmbox_databaseType.SelectedIndex;
                 string connection = txt_connInfo.Text.Trim();
                 //DataSource ds = GetDataSource(select, e);
@@ -462,6 +464,10 @@ namespace AutogenerationConnectionString
                     default:
                         break;
                 }
+            }
+            else
+            {
+                this.Height = 375;
             }
         }
     }
