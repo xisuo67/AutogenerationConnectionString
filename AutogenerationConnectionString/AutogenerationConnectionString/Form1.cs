@@ -416,44 +416,52 @@ namespace AutogenerationConnectionString
             }
         }
 
-        private void txt_connInfo_TextChanged(object sender, EventArgs e)
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            SelectEnum select = (SelectEnum)cmbox_databaseType.SelectedIndex;
-            string connection = txt_connInfo.Text.Trim();
-            //DataSource ds = GetDataSource(select, e);
-            switch (select)
+            if (checkBox1.Checked)
             {
-                case SelectEnum.Oracle:
-                    using (OracleConnection con = new OracleConnection(connection))
-                    {
-                        try
+                if (string.IsNullOrEmpty(txt_connInfo.Text))
+                {
+                    MessageBox.Show("请先输入连接信息","提示");
+                    return;
+                }
+                SelectEnum select = (SelectEnum)cmbox_databaseType.SelectedIndex;
+                string connection = txt_connInfo.Text.Trim();
+                //DataSource ds = GetDataSource(select, e);
+                switch (select)
+                {
+                    case SelectEnum.Oracle:
+                        using (OracleConnection con = new OracleConnection(connection))
                         {
-                            con.Open();
-                            OracleCommand cmd = con.CreateCommand();
-                            cmd.CommandText = "select UserGuid,UserCode as UserName from SYS_USER";
-                            OracleDataAdapter da = new OracleDataAdapter(cmd);
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            if (dt != null)
+                            try
                             {
-                                UserInfoList= dt.ToList<UserInfo>();
-                                comboBox2.DataSource = dt;
-                                comboBox2.DisplayMember = "UserName";
-                                comboBox2.SelectedIndex = 0;
+                                con.Open();
+                                OracleCommand cmd = con.CreateCommand();
+                                cmd.CommandText = "select UserGuid,UserCode as UserName from SYS_USER";
+                                OracleDataAdapter da = new OracleDataAdapter(cmd);
+                                DataTable dt = new DataTable();
+                                da.Fill(dt);
+                                if (dt != null)
+                                {
+                                    UserInfoList = dt.ToList<UserInfo>();
+                                    comboBox2.DataSource = dt;
+                                    comboBox2.DisplayMember = "UserName";
+                                    comboBox2.SelectedIndex = 0;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(this, "数据库连接失败", "提示");
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(this, "数据库连接失败", "提示");
-                        }
-                    }
-                    break;
-                case SelectEnum.Server_SQL:
-                    break;
-                case SelectEnum.MySQL:
-                    break;
-                default:
-                    break;
+                        break;
+                    case SelectEnum.Server_SQL:
+                        break;
+                    case SelectEnum.MySQL:
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
